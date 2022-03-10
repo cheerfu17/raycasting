@@ -1,0 +1,30 @@
+#
+!main.cpp graphics.h keys_n_colors.h math.h stdio.h #<#>
+Map _type_ #<main.cpp>
+Player _type_ #<main.cpp>
+drawBG() -> void #<main.cpp>
+drawCross() -> void #<main.cpp>
+drawMap(int* count, Map* m) -> void #<main.cpp>
+inSquare(int x, int y, int* count, Map* m) -> int #<main.cpp>
+initMap(int* count, Map* m) -> void #<main.cpp>
+initPlayer() -> void #<main.cpp>
+main() -> int #<main.cpp>
+moving() -> void #<main.cpp>
+player : Player #<main.cpp>
+rayCasting(int* count, Map* m) -> int #<main.cpp>
+squareNow(int* a, int* b) -> void #<main.cpp>
+	Map::x : int #<main.cpp>
+	Map::y : int #<main.cpp>
+	Map::size : int #<main.cpp>
+	Player::x : int #<main.cpp>
+	Player::y : int #<main.cpp>
+	Player::speed : int #<main.cpp>
+	Player::angle : double #<main.cpp>
+	Player::num_rays : double #<main.cpp>
+	Player::fov : double #<main.cpp>
+	Player::max_depth : int #<main.cpp>
+	Player::delta_angle : double #<main.cpp>
+	Player::half_fov : double #<main.cpp>
+	Player::dist : double #<main.cpp>
+	Player::proj_coeff : double #<main.cpp>
+	Player::scale : int #<main.cpp>

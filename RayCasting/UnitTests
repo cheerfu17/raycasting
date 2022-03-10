@@ -1,0 +1,80 @@
+# Generated Makefile. При изменении этого файла вручную удалите данную строку
+
+ifndef TARGET
+TARGET = coverage
+endif
+
+ifndef SCENARIO
+SCENARIO =  
+endif
+
+CSOURCES = $(wildcard *.c)
+CPPSOURCES = $(filter-out %_unittest.cpp %_featuretest.cpp, $(wildcard *.cpp))
+CHEADERS = $(wildcard *.h)
+CPPHEADERS = $(wildcard *.hpp)
+ifeq ($(TARGET),coverage)
+CCFLAGS = -O0  
+COVFLAGS = -fprofile-arcs -ftest-coverage
+else ifeq ($(TARGET),debug)
+CCFLAGS = -g -O0  
+COVFLAGS = 
+else
+CCFLAGS = -O1  
+COVFLAGS = 
+endif
+CCCS = -finput-charset=utf-8 -fexec-charset=windows-1251
+CCCW = -finput-charset=windows-1251 -fexec-charset=windows-1251
+GCC = gcc -std=c11
+LFLAGS = -Wl,--stack,83886080 -static
+GPP = g++ -std=c++20
+CC = $(GPP)
+LIBS =  conio2 bgi gdi32 comdlg32 uuid oleaut32 ole32 gmock gherkin-cpp units gcov
+OBJS = $(sort $(patsubst %.c,$(TARGET)/%.o,$(CSOURCES)) $(patsubst %.cpp,$(TARGET)/%.o,$(CPPSOURCES)))
+TESTLIST =  
+FEATURELIST =  
+FEATURELISTEXE = $(addprefix $(TARGET)/,$(addsuffix .exe,$(FEATURELIST)))
+
+ifeq ($(filter %.gcov, $(MAKECMDGOALS)),)
+ifneq ($(wildcard $(TARGET)/*.gcda),)
+CLEANGCDA:=$(shell del "$(TARGET)\\*.gcda")
+endif
+endif
+
+.PHONY : all clean cleangcda features $(TESTLIST)
+
+all: $(TESTLIST)
+
+clean:
+	$(if $(wildcard coverage),rmdir /q /s coverage)
+	$(if $(wildcard release),rmdir /q /s release)
+	$(if $(wildcard debug),rmdir /q /s debug)
+	$(if $(wildcard temp),rmdir /q /s temp)
+
+cleangcda:
+
+$(TESTLIST) features $(OBJS) : | $(TARGET)
+
+$(TARGET):
+	mkdir $(TARGET)
+
+$(TARGET)/%.o: %.cpp $(CPPHEADERS) $(CHEADERS)
+	$(GPP) $(CCFLAGS) $(COVFLAGS) $(if $(filter uc%,$<),$(CCCS),$(CCCW)) -o $@ -c $<
+
+$(TARGET)/%.o: %.c $(CHEADERS)
+	$(GCC) $(CCFLAGS) $(COVFLAGS) $(if $(filter uc%,$<),$(CCCS),$(CCCW)) -o $@ -c $<
+
+$(TARGET)/%.c.gcov: %.c $(TARGET)/%.gcda
+	gcov -b -s . -o $(TARGET) -m -r -f $< >$(TARGET)\\gcov.lst
+	gcov2 $(TARGET)\\gcov.lst $@
+
+$(TARGET)/%.cpp.gcov: %.cpp $(TARGET)/%.gcda
+	gcov -b -s . -o $(TARGET) -m -r -f $< >$(TARGET)\\gcov.lst
+	gcov2 $(TARGET)\\gcov.lst $@
+
+$(TARGET)/libunits.a: $(OBJS) UnitTests
+	$(if $(wildcard $(TARGET)/libunits.a),del $(TARGET)\\libunits.a)
+	ar -rv $(TARGET)/libunits.a $(OBJS)
+
+ 
+features: $(FEATURELISTEXE)
+
